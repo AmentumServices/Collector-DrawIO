@@ -31,13 +31,13 @@ jobs:
       - name: Run Collection
         run: |
           echo -e "\nWorking with github repo jgraph/drawio-desktop"
-          echo -e "Listing last 3 releases\n"
+          echo -e "\n\nListing last 3 releases\n"
           gh release list -R jgraph/drawio-desktop | head -n3
           mkdir -p ${{ vars.COLLECTOR }}
-          echo -e "\nDownloading Latest to ${{ vars.COLLECTOR }}/drawio-desktop-latest\n"
+          echo -e "\n\nDownloading Latest to ${{ vars.COLLECTOR }}/drawio-desktop-latest\n"
           gh release download -p "*" -D ${{ vars.COLLECTOR }}/drawio-desktop-latest -R jgraph/drawio-desktop
           ls -alh ${{ vars.COLLECTOR }}/drawio-desktop-latest 
-          echo -e "\nDownloading drawio-desktop-24.6.1 to ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1\n"
+          echo -e "\n\nDownloading drawio-desktop-24.6.1 to ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1\n"
           gh release download -D ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 -R jgraph/drawio-desktop v24.6.1 
           ls -alh ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 
 
@@ -69,6 +69,20 @@ jobs:
 
       - name: Show ISO & Hash
         run: ls -alh *.iso*
+
+      - name: Upload iso artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+          if-no-files-found: error
+
+      - name: Upload iso sha artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          path: ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          if-no-files-found: error
         
       - name: Send ISO to Sharepoint
         uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
