@@ -19,7 +19,7 @@ jobs:
           echo -e "\n$GITHUB_OUTPUT\n"
           cat $GITHUB_OUTPUT
 
-  CollectAssets:
+  Collect:
     needs: [Date]
     runs-on: ubuntu-latest
     env:
@@ -30,10 +30,10 @@ jobs:
 
       - name: Run Collection
         run: |
-          mkdir -p ${{ vars.COLLECTOR }}
           echo -e "\nWorking with github repo jgraph/drawio-desktop"
           echo -e "Listing last 3 releases\n"
           gh release list -R jgraph/drawio-desktop | head -n3
+          mkdir -p ${{ vars.COLLECTOR }}
           echo -e "\nDownloading Latest to ${{ vars.COLLECTOR }}/drawio-desktop-latest\n"
           gh release download -p "*" -D ${{ vars.COLLECTOR }}/drawio-desktop-latest -R jgraph/drawio-desktop
           ls -alh ${{ vars.COLLECTOR }}/drawio-desktop-latest 
