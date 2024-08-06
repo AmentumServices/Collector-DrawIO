@@ -1,0 +1,82 @@
+name: Container-Collector
+run-name: ${{ github.actor }} is Collecting Images 🚀
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    
+jobs:
+  Date:
+    runs-on: ubuntu-latest
+    outputs:
+      Date: ${{ steps.date.outputs.date }}
+    steps:
+      - name: Get current date
+        id: DATE
+        run: |
+          echo "DATE=$(date '+%Y%m%d-%H%M')" >> $GITHUB_OUTPUT
+          echo -e "\n$GITHUB_OUTPUT\n"
+          cat $GITHUB_OUTPUT
+
+  Container-Images:
+    needs: [Date]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Run Collection
+        run: |
+          mkdir -p ${{ vars.COLLECTOR }}
+          echo -e "\nWorking with github repo jgraph/drawio-desktop"
+          echo -e "Listing last 3 releases\n"
+          gh release list -R jgraph/drawio-desktop | head -n3
+          echo -e "\nDownloading Latest to ${{ vars.COLLECTOR }}/drawio-desktop-latest\n"
+          gh release download -D ${{ vars.COLLECTOR }}/drawio-desktop-latest -R jgraph/drawio-desktop
+          echo -e "\nDownloading drawio-desktop-24.6.1 to ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1\n"
+          gh release download -D ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 -R jgraph/drawio-desktop v24.6.1 
+
+      - name: Copy README to ISO
+        run: cp -v README.md ${{ vars.COLLECTOR }}/
+
+      - name: Install mkisofs
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y mkisofs isomd5sum
+      
+      - name: Make ISO
+        run: |
+          echo -e "\nMaking ISO of ${{ vars.COLLECTOR }}"
+          mkisofs -J -R -v -T -l \
+            -V '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
+            -A '${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}' \
+            -o ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso \
+            ${{ vars.COLLECTOR }}
+
+      - name: Implant MD5 sum into iso
+        run: implantisomd5 ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso
+      
+      - name: Generate Hash
+        run: |
+          sha256sum -b ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso >>\
+          ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+          cat ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
+
+      - name: Show ISO & Hash
+        run: ls -alh *.iso*
+        
+      - name: Send ISO to Sharepoint
+        uses: JacobsFederal/sharepoint-file-upload-action@pappasjfed-patch-1
+        with:
+          file_path: "*.iso*"
+          host_name: 'jacobsfederal.sharepoint.us'
+          site_name: 'USCMSNISSCII.DSO'
+          upload_path: '${{ vars.SHAREPOINT_BASEPATH }}/${{ vars.COLLECTOR }}/'
+          tenant_id: ${{ secrets.SHAREPOINT_TENANT_ID }}
+          client_id: ${{ secrets.SHAREPOINT_APP_ID }}
+          client_secret: ${{ secrets.SHAREPOINT_APP_SECRET }}
+          login_endpoint: 'login.microsoftonline.us'
+          graph_endpoint: 'graph.microsoft.us'
