@@ -35,7 +35,7 @@ jobs:
           echo -e "Listing last 3 releases\n"
           gh release list -R jgraph/drawio-desktop | head -n3
           echo -e "\nDownloading Latest to ${{ vars.COLLECTOR }}/drawio-desktop-latest\n"
-          gh release download -D ${{ vars.COLLECTOR }}/drawio-desktop-latest -R jgraph/drawio-desktop
+          gh release download -p "*" -D ${{ vars.COLLECTOR }}/drawio-desktop-latest -R jgraph/drawio-desktop
           echo -e "\nDownloading drawio-desktop-24.6.1 to ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1\n"
           gh release download -D ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 -R jgraph/drawio-desktop v24.6.1 
 
