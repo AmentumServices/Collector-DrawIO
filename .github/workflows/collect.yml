@@ -36,10 +36,10 @@ jobs:
           mkdir -p ${{ vars.COLLECTOR }}
           echo -e "\n\nDownloading Latest to ${{ vars.COLLECTOR }}/drawio-desktop-latest\n"
           gh release download -p "*" -D ${{ vars.COLLECTOR }}/drawio-desktop-latest -R jgraph/drawio-desktop
-          ls -alh ${{ vars.COLLECTOR }}/drawio-desktop-latest 
+          ls -Alh ${{ vars.COLLECTOR }}/drawio-desktop-latest 
           echo -e "\n\nDownloading drawio-desktop-24.6.1 to ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1\n"
           gh release download -D ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 -R jgraph/drawio-desktop v24.6.1 
-          ls -alh ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 
+          ls -Alh ${{ vars.COLLECTOR }}/drawio-desktop-24.6.1 
 
       - name: Copy README to ISO
         run: cp -v README.md ${{ vars.COLLECTOR }}/
@@ -68,7 +68,7 @@ jobs:
           cat ${{ vars.COLLECTOR }}-${{ needs.Date.outputs.Date }}.iso.sha
 
       - name: Show ISO & Hash
-        run: ls -alh *.iso*
+        run: ls -Alh *.iso*
 
       - name: Upload iso artifact
         uses: actions/upload-artifact@v4
