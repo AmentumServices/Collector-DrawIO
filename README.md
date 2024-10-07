@@ -1,6 +1,6 @@
 # What is this?
 
-[![Releasw](https://github.com/jacobsfederal/Collector-DrawIO/actions/workflows/collect.yml/badge.svg?branch=main)](https://github.com/JacobsFederal/Collector-DrawIO/actions/workflows/collect.yml)
+[![Release](https://github.com/amentumservices/Collector-DrawIO/actions/workflows/collect.yml/badge.svg?branch=main)](https://github.com/amentumservices/Collector-DrawIO/actions/workflows/collect.yml)
 
 This is a project that automatically collects and creates artifacts to ease in air-gapped transfer of the latest DrawIO Release.
 
